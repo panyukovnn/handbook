@@ -5,14 +5,17 @@
 - [Именование пакетов](#именование-пакетов)
 - [Именование ресурсов](#именование-ресурсов)
 - [Длина строк](#длина-строк)
-- [Методы](#размер-методов)
-- [Классы](#размер-файлов)
+- [Методы](#методы)
+- [Классы](#классы)
+- [Records](#records)
 - [Переносы строк](#переносы-строк)
 - [Отступы и пустые строки](#отступы-и-пустые-строки)
 - [Конструкции](#конструкции)
 - [Константы](#константы)
-- [Порядок полей класса](#порядок-поля-класса)
-- [Порядок методов](#порядок-методы)
+  - [Современный синтаксис switch](#современный-синтаксис-switch-java-21)
+  - [Использование var](#использование-var)
+- [Порядок полей класса](#порядок-полей-класса)
+- [Порядок методов](#порядок-методов)
 - [Аннотации](#аннотации)
 - [Функциональные цепочки вызовов](#функциональные-цепочки-вызовов)
 - [Избежание NullPointerException при сравнениях по equals](#избежание-nullpointerexception-при-сравнениях-по-equals)
@@ -61,6 +64,38 @@
 ### Классы
 Классы должны быть не длиннее 250 строк, это помогает LLM целиком загружать их в контекст и выдавать более качественные ответы
 
+### Records
+Если проект уже использует обычные транспортные объекты (DTO с lombok), то следует придерживаться существующего подхода с обычными классами для сохранения единообразия кодовой базы.
+
+Records рекомендуется использовать в следующих случаях:
+- Проект разрабатывается с нуля
+- Проект уже повсеместно использует records
+- В качестве внутренних статических классов:
+  - при объединении большого количества аргументов метода в один объект
+  - при объединении нескольких объектов, которые необходимо вернуть из метода
+
+
+**Пример использования record с @Builder'ом и валидацией:**
+```java
+@Builder
+public record CreateLinkInfoRequest(
+
+        @NotEmpty(message = "Ссылка не может быть пустой")
+        @Pattern(regexp = "^http[s]?://.+\\..+$", message = "url не соответствует паттерну")
+        String link,
+
+        @Future(message = "Дата окончания действия короткой ссылки не может быть в прошлом")
+        LocalDateTime endTime,
+
+        @NotEmpty(message = "Описание не может быть пустым")
+        String description,
+
+        @NotNull(message = "Признак активности не может быть null")
+        Boolean active
+) {
+}
+```
+
 ### Переносы строк
 Открывающая фигурная скобка не переносится на новую строку:
 
@@ -107,8 +142,6 @@ public List<Integer> createSomeList(int size) {
 }
 ```
 также рекомендуется оставлять пустую строку перед началом конструкций (if, for, try и др.)
-
-
 
 3. Рекомендуется оставлять одну пустую строку:
 
@@ -217,6 +250,91 @@ switch (condition) {
 ```
 Каждая альтернатива содержит ключевое слово break
 
+#### Современный синтаксис switch (Java 21+)
+При использовании современных версий Java (14+) рекомендуется использовать новый синтаксис switch с выражениями и pattern matching.
+
+**Пример 1: Switch expression с возвращаемым значением и блоками кода**
+```java
+String message = switch (userType) {
+    case ADMIN, MODERATOR -> {
+        log.info("Accessing admin panel");
+        yield "Добро пожаловать в панель управления";
+    }
+    case USER -> {
+        log.info("Regular user access");
+        yield "Добро пожаловать";
+    }
+    case GUEST -> "Ограниченный доступ";
+    default -> throw new IllegalArgumentException("Unknown user type: " + userType);
+};
+```
+
+**Пример 2: Pattern matching (Java 21+)**
+```java
+String formatted = switch (obj) {
+    case Integer i -> String.format("Integer: %d", i);
+    case String s -> String.format("String: %s", s);
+    case LocalDate date -> String.format("Date: %s", date.format(DateTimeFormatter.ISO_DATE));
+    case null -> "null value";
+    default -> obj.toString();
+};
+```
+
+**Пример 4: Switch в качестве statement (без возврата значения)**
+```java
+switch (action) {
+    case CREATE -> userService.createUser(request);
+    case UPDATE -> userService.updateUser(request);
+    case DELETE -> userService.deleteUser(request.getId());
+    default -> throw new UnsupportedOperationException("Unknown action: " + action);
+}
+```
+
+Преимущества нового синтаксиса:
+- Нет необходимости в `break`
+- Можно использовать как выражение с возвращаемым значением
+- Более компактный и читаемый код
+- Обязательная обработка всех вариантов (exhaustiveness checking)
+- Поддержка pattern matching для более гибкой обработки типов
+
+#### Использование var
+Использование `var` в коде проекта **не допускается**.
+
+Возможно использование только в тестах.
+
+Если на проекте уже принято использовать `var`, то следует придерживаться следующих правил:
+- Использовать `var` только там, где очевиден возвращаемый тип (при создании через `new` или builder)
+- **Не допускается** при присвоении в переменную результата выполнения метода
+- **Не допускается** при присвоении результата функциональной цепочки Stream API
+
+**Примеры допустимого использования var (если на проекте принято):**
+```java
+// Создание объекта через new - тип очевиден
+var user = new User();
+var users = new ArrayList<User>();
+
+// Использование builder - тип очевиден
+var request = CreateUserRequest.builder()
+    .name("John")
+    .email("john@example.com")
+    .build();
+```
+
+**Примеры недопустимого использования var:**
+```java
+// Результат метода - тип неочевиден
+var result = userService.processUser(id); // Неправильно
+UserProcessResult result = userService.processUser(id); // Правильно
+
+// Результат Stream API - тип неочевиден
+var filtered = users.stream()
+    .map(user -> user.getCardId())
+    .collect(Collectors.toList()); // Неправильно
+
+List<UUID> filtered = users.stream()
+    .map(user -> user.getCardId())
+    .collect(Collectors.toList()); // Правильно
+```
 
 ### Константы
 Не следует выносить значение в константу, если она используется менее чем в двух местах в коде.
@@ -429,8 +547,3 @@ HAVING COUNT(e.id) > 5
 ORDER BY avg_salary DESC, d.name ASC
 LIMIT 10
 ```
-
-### Доработать
-- добавить про records
-- добавить про var
-- пример с современным switch
