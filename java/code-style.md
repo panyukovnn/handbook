@@ -8,6 +8,7 @@
 - [Методы](#методы)
 - [Классы](#классы)
 - [Records](#records)
+- [Enum'ы](#enumы)
 - [Переносы строк](#переносы-строк)
 - [Отступы и пустые строки](#отступы-и-пустые-строки)
 - [Конструкции](#конструкции)
@@ -93,6 +94,40 @@ public record CreateLinkInfoRequest(
         @NotNull(message = "Признак активности не может быть null")
         Boolean active
 ) {
+}
+```
+
+### Enum'ы
+
+Значения enum'ов пишутся в UPPER_SNAKE_CASE
+
+Каждое значение enum должно располагаться на новой строке для лучшей читаемости.
+
+При добавлении полей к enum'ам рекомендуется использовать аннотации `@Getter` и `@RequiredArgsConstructor`.
+
+**Пример простого enum:**
+```java
+public enum UserStatus {
+    ACTIVE,
+    INACTIVE,
+    BLOCKED,
+    PENDING_VERIFICATION
+}
+```
+
+**Пример enum с полями:**
+```java
+@Getter
+@RequiredArgsConstructor
+public enum OrderStatus {
+    NEW("Новый заказ", 1),
+    IN_PROGRESS("В обработке", 2),
+    READY_FOR_DELIVERY("Готов к отправке", 3),
+    DELIVERED("Доставлен", 4),
+    CANCELLED("Отменён", 5);
+
+    private final String description;
+    private final int order;
 }
 ```
 
