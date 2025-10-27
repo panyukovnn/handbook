@@ -13,6 +13,7 @@
 ### Java
 
 - [CodeStyle](java/code-style.md)
+- [Рекомендации по именованию всего](java/naming.md)
 
 ---
 
