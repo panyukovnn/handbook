@@ -8,12 +8,14 @@
 
 ### Общие
 
+- [Требования к API](common/api-requirements.md)
 - [Правила ведения Pull Request'ов и code review](common/%D0%9F%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0-%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F-Pull-Request-%D0%B8-code-review.md)
 
 ### Java
 
 - [CodeStyle](java/code-style.md)
 - [Рекомендации по именованию всего](java/naming.md)
+- [Правила по работе с liquibase](java/liquibase.md)
 
 ---
 
