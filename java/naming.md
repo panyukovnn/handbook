@@ -213,3 +213,50 @@ ru.panyukovnn.paymentlimit
 
 - TEAM-1010: Реализована логика сценария создания платежа
 - TEAM-7777: Добавлено кеширование Счетчиков
+
+---
+
+## Имена ресурсов
+
+### Конфигурационные файлы (YML/properties/XML)
+
+- `kebab-case`
+- yaml файлы разрешают писать расширение в двух стилях, yaml и yml, рекомендуется придерживаться варианта **yml**
+
+### Примеры
+- `application.yml` 
+- `application-localdev.properties` 
+- `logback-spring.xml`
+
+### Liquibase миграции и SQL файлы
+
+- `snake_case`
+- подробнее про именование liquibase скриптов указано в отдельной инструкции
+
+### Примеры
+
+- `01.create_operation_type.yml`
+- `20250925_01_insert_counter_types.sql`
+
+---
+
+## Имена настроек
+
+### В yml файлах
+
+- `kebab-case` либо `camelCase`, рекомендуется придерживаться единого стиля в рамках проекта
+- группируйте связанные настройки под общим префиксом
+- добавляйте единицы измерения (`-sec`, `-ms`, `-hours`, `-months`)
+- под каждую группу настроек следует создавать свой `@ConfigurationProperties` класс 
+
+### Примеры
+```yaml
+payment-limit:
+  cache:
+    partner-ttl-hours: 1
+    operation-type-ttl-hours: 1
+  remove-old-transaction-and-counters-job:
+    enabled: true
+    cron: "0 0 1 * * *"
+    ttl-months: 2
+```
