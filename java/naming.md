@@ -353,6 +353,8 @@ payment-limit:
 ## Имена сущностей в БД
 
 - `snake_case`
+- не следует использовать зарезервированные слова SQL и СУБД: limit, offset, user, order, column, table, index
+- не следует использовать общеупотребительные слова: entity, record, value, data, row, class
 
 ### Схемы бд
 - соответствует названию микросервиса в `snake_case`

@@ -2,8 +2,6 @@
 
 ## Оглавление
 
-- [Именование пакетов](#именование-пакетов)
-- [Именование ресурсов](#именование-ресурсов)
 - [Длина строк](#длина-строк)
 - [Методы](#методы)
 - [Классы](#классы)
@@ -23,29 +21,9 @@
 - [Избежание NullPointerException при сравнениях по equals](#избежание-nullpointerexception-при-сравнениях-по-equals)
 - [Javadoc](#javadoc)
 - [Комментарии](#комментарии)
-- [Нейминг тестов](#нейминг-тестов)
 - [Форматирование SQL](#форматирование-sql)
 
 ---
-
-Данные рекомендации были составлены мной, по опыту работы на монолитном проекте, со строгими требованиями к стилю кода.
-
-Однако с тех пор я менее строго стал относиться к соблюдению данных правил, например, перестал писать javadoc'и.
-
-Связано это с тем, что в микросервисах объем кода меньше, соответственно читать и поддерживать его проще, и требования не должны быть жесткими.
-
-Тем не менее, я уверен, что вы сможете подчерпнуть для себя полезные правила и применять их в работе.
-
-### Именование пакетов
-Без тире, в нижнем регистре
-
-Пример:
-`ru.panyukovnn.ssocontroller`
-
-### Именование ресурсов
-В нижнем регистре через знак тире (kebab-case):
-
-`logback-spring.xml`
 
 ### Длина строк
 Длина строк не более 250 символов
@@ -163,7 +141,12 @@ someMethod(longExpression1, longExpression2,
 
 Табуляция не используется.
 
-2. Необходимо оставлять пустую строку перед ключевым словом return, а также после закрывающих фигурных скобок (если это не конец метода):
+2. Необходимо оставлять пустую строку:
+- перед ключевым словом return
+- после закрывающих фигурных скобок (если это не конец метода)
+- перед началом конструкций (if, for, try и др.)
+
+Образец:
 ```java
 public List<Integer> createSomeList(int size) {
     List<Integer> result = new ArrayList<>();
@@ -177,7 +160,6 @@ public List<Integer> createSomeList(int size) {
     return result;
 }
 ```
-также рекомендуется оставлять пустую строку перед началом конструкций (if, for, try и др.)
 
 3. Рекомендуется оставлять одну пустую строку:
 
@@ -189,41 +171,65 @@ public List<Integer> createSomeList(int size) {
 
 Образец синтаксиса:
 ```java
+package ru.panyukovnn.paymentlimit.service.domain;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Service;
+import ru.panyukovnn.linkshortener.dto.LinkInfoResponse;
+import ru.panyukovnn.linkshortener.dto.UpdateLinkInfoRequest;
+import ru.panyukovnn.linkshortener.exception.NotFoundException;
+import ru.panyukovnn.linkshortener.exception.ShortLinkNotFoundException;
+import ru.panyukovnn.linkshortener.mapper.LinkInfoMapper;
+import ru.panyukovnn.linkshortener.model.LinkInfo;
+import ru.panyukovnn.linkshortener.repository.LinkInfoRepository;
+import ru.panyukovnn.linkshortener.service.LinkInfoService;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
-public class UserApiServiceImpl implements UserApiService {
+public class LinkInfoServiceImpl implements LinkInfoService {
 
-    private static final String DEFAULT_PAGE_SIZE = 10;
- 
-    private final UserApi userApi;
-    private final SearchRequestMapper searchRequestMapper;
- 
+    private static final int SHORT_LINK_LENGTH = 8;
+
+    private final LinkInfoMapper linkInfoMapper;
+    private final LinkInfoRepository linkInfoRepository;
+
     @Override
-    public List<IoUser> searchUsers(String filterQuery, Integer pageNumber, Integer pageSize) {
-        Integer definedPageSize = pageSize == null
-            ? DEFAULT_PAGE_SIZE
-            : pageSize;
- 
-        IoSearchRequest request = searchRequestMapper.toSearchRequest(filterQuery, pageNumber, pageSize);
-        IoSearchUserListResponse response = userApi.searchUser(request);
- 
-        return Optional.ofNullable(response)
-            .map(IoSearchUserListResponse::getObject)
-            .map(IoSearchUserListResponseObject::getObject)
-            .orElse(List.of());
+    public LinkInfoResponse getByShortLink(String shortLink) {
+        LinkInfo linkInfo = linkInfoRepository.findActiveByShortLink(shortLink, LocalDateTime.now())
+            .orElseThrow(() -> new ShortLinkNotFoundException("Информация по короткой ссылке не найдена: " + shortLink));
+
+        linkInfoRepository.incrementOpeningCountByShortLink(linkInfo.getShortLink());
+
+        return linkInfoMapper.toResponse(linkInfo);
     }
- 
+
     @Override
-    public void updateUser(UUID id, UserModificationRequest userModificationRequest) {
-        IoItemUserDelta itemDelta = toItemUserDelta(userModificationRequest);
- 
-        if (itemDelta == null) {
-            return;
+    public LinkInfoResponse updateLinkInfo(UpdateLinkInfoRequest request) {
+        LinkInfo linkInfo = linkInfoRepository.findById(UUID.fromString(request.getId()))
+            .orElseThrow(() -> new NotFoundException("Не удалось найти короткую ссылку по идентификатору: " + request.getId()));
+
+        if (request.getLink() != null) {
+            linkInfo.setLink(request.getLink());
         }
- 
-        IoUpdateUserRequest request = createUpdateUserRequest(itemDelta);
- 
-        userApi.updateUser(id, request);
+
+        linkInfo.setEndTime(request.getEndTime());
+
+        if (request.getDescription() != null) {
+            linkInfo.setDescription(request.getDescription());
+        }
+
+        if (request.getActive() != null) {
+            linkInfo.setActive(request.getActive());
+        }
+
+        linkInfoRepository.save(linkInfo);
+
+        return linkInfoMapper.toResponse(linkInfo);
     }
 }
 ```
@@ -287,7 +293,7 @@ switch (condition) {
 Каждая альтернатива содержит ключевое слово break
 
 #### Современный синтаксис switch (Java 21+)
-При использовании современных версий Java (14+) рекомендуется использовать новый синтаксис switch с выражениями и pattern matching.
+При использовании современных версий Java рекомендуется использовать новый синтаксис switch с выражениями и pattern matching.
 
 **Пример 1: Switch expression с возвращаемым значением и блоками кода**
 ```java
@@ -496,7 +502,7 @@ public class UserService {
      * @throws BusinessException исключение бизнес логики
      */
     public User updateUser(long id, String name) throws BusinessException {
-        ...
+        // ...
     }
 }
 ```
@@ -558,20 +564,11 @@ String key = new String("key");
 3. В остальных случаях избегать использования комментариев, стараться писать самодокументируемый и читаемый код.
 
 
-### Нейминг тестов
-1. Название тестов должно соответствовать содержанию
-2. Каждая команда/разработчик выбирают свой стиль нейминга, не нарушающий общепринятых конвенций
-3. В рамках одного проекта следует поддерживать единый стиль
-
-Я придерживаюсь следующего стиля: when_имяТестируемогоМетода_условие_then_ожидаемый_результат
-
-Пример:
-
-- when_findUsers_filteredByName_then_success
-- when_sendNotification_withoutEmail_then_illegalArgumentsException
-
 ### Форматирование SQL
-При необходимости писать код на SQL (hql, jpql), следует придерживаться следующего форматирования:
+
+- ключевые слова SQL пишутся в верхнем регистре
+- таблицы и их поля пишутся в нижнем регистре
+
 Пример 1:
 ```sql
 SELECT e.*
