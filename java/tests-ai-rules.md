@@ -34,6 +34,7 @@
 - Tests must not use constants from Project code.
 - Tests must not use Thread.sleep() construction.
 - Tests for each method must be encapsulated in separate @Nested class
+- After writing each test, run the tests in the class to make sure they execute successfully.
 
 ## Naming
 
