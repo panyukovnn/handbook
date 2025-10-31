@@ -151,7 +151,7 @@ ru.panyukovnn.paymentlimit
 
 ### Примеры
 
-- when_postPayment_thne_success
+- when_postPayment_then_success
 - when_findUsers_filteredByName_then_success
 - when_sendNotification_withoutEmail_then_illegalArgumentsException
 
