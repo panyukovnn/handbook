@@ -20,7 +20,6 @@
 - The best tests consist of a single statement.
 - Tests should use Hamcrest matchers if available. For simple assertions, use JUnit assertions.
 - Each test must verify only one specific behavioral pattern of the object it tests.
-- Tests must use random values as inputs.
 - Tests are not allowed to print any log messages.
 - Tests must not wait indefinitely for any event; they must always stop waiting on a timeout.
 - Tests must verify object behavior in multi-threaded, concurrent environments.
@@ -49,6 +48,158 @@
 
 - all public and protected methods must be covered with tests
 - tests coverage must be at least 70%
+
+## Example 
+
+- The tested class:
+
+```java
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class AssignRole2SpaccApprovalProcessor implements AssignApprovalProcessor {
+
+    private final UserService userService;
+    private final RoleService roleService;
+    private final ManagerMapper managerMapper;
+    private final SpecialAccountsService specialAccountsService;
+
+    // ...
+
+    protected List<Approver> determineRoleOwnerApprovers(ObjectDetails objectDetails, String initiator, String subjectName, String objectName) {
+        if (!CollectionUtils.isEmpty(objectDetails.getApprovers())) {
+            return List.of();
+        }
+
+        List<ManagerDetails> managerDetailsList = ioManagerDtos.stream()
+                .map(managerMapper::fromIo)
+                .map(userService::extractManagerDetails)
+                .toList();
+
+        boolean anyOfManagersOrDelegatesIsInitiator = objectDetails.getOwners().stream()
+                .anyMatch(managerDetails -> initiator.equalsIgnoreCase(managerDetails.getManager().getLogin())
+                        || (managerDetails.getDelegate() != null && initiator.equalsIgnoreCase(managerDetails.getDelegate().getLogin())));
+
+        if (anyOfManagersOrDelegatesIsInitiator) {
+            log.info("Назначение Роли '{}' для СпУЗ '{}'. Владелец роли или его делегат является инициатором, согласующие не будут добавлены", objectName, subjectName);
+
+            return List.of();
+        }
+        List<Approver> roleOwnersAndTheirDelegatesApprovers = objectDetails.getOwners().stream()
+                .map(roleOwner -> {
+                    List<Approver> ownerAndDelegateApprovers = new ArrayList<>();
+
+                    if (roleOwner.getDelegate() != null) {
+                        ownerAndDelegateApprovers.add(Approver.builder()
+                                .login(roleOwner.getDelegate().getLogin())
+                                .role(ApproverRole.OWNER)
+                                .delegate(true)
+                                .build());
+                    }
+
+                    ownerAndDelegateApprovers.add(Approver.builder()
+                            .login(roleOwner.getManager().getLogin())
+                            .role(ApproverRole.OWNER)
+                            .delegate(false)
+                            .build());
+
+                    return ownerAndDelegateApprovers;
+                })
+                .flatMap(Collection::stream)
+                .toList();
+
+        if (CollectionUtils.isEmpty(roleOwnersAndTheirDelegatesApprovers)) {
+            throw new IdmBusinessException("542990a6", IdmResponseDefaultErrorCode.BUSINESS_EXCEPTION.getCode(),
+                    "Назначение роли для СпУЗ '%s' невозможно, у роли '%s' нет владельцев".formatted(subjectName, objectName));
+        }
+
+        return roleOwnersAndTheirDelegatesApprovers;
+    }
+
+}
+```
+
+- Reference test:
+```java
+@ExtendWith(MockitoExtension.class)
+class AssignRole2SpaccApprovalProcessorTest {
+
+    private final UserService userService = mock(UserService.class);
+    private final RoleService roleService = mock(RoleService.class);
+    private final ManagerMapper managerMapper = Mappers.getMapper(ManagerMapper.class);
+    private final SpecialAccountsService specialAccountsService = mock(SpecialAccountsService.class);
+
+    private final AssignRole2SpaccApprovalProcessor approvalProcessor = new AssignRole2SpaccApprovalProcessor(userService, roleService, managerMapper, specialAccountsService);
+
+    @Nested
+    class DetermineRoleOwnerApproversTests {
+
+        @Test
+        void when_determineRoleOwnerApprovers_withNonEmptyApprovers_then_returnsEmptyList() {
+            IoManagerDto approver = new IoManagerDto();
+            approver.setLogin("approverLogin");
+
+            ObjectDetails objectDetails = new ObjectDetails();
+            objectDetails.setApprovers(List.of(approver));
+
+            String initiator = "initiator";
+            String subjectName = "subjectName";
+            String objectName = "objectName";
+
+            List<Approver> result = approvalProcessor.determineRoleOwnerApprovers(objectDetails, initiator, subjectName, objectName);
+
+            assertThat(result, is(empty()));
+        }
+
+        @Test
+        void when_determineRoleOwnerApprovers_withEmptyOwners_then_throwsException() {
+            ObjectDetails objectDetails = new ObjectDetails();
+            objectDetails.setApprovers(List.of());
+            objectDetails.setOwners(List.of());
+
+            String initiator = "initiator";
+            String subjectName = "subjectName";
+            String objectName = "objectName";
+
+            IdmBusinessException exception = assertThrows(
+                    IdmBusinessException.class,
+                    () -> approvalProcessor.determineRoleOwnerApprovers(objectDetails, initiator, subjectName, objectName)
+            );
+
+            assertEquals(
+                    "Назначение роли для СпУЗ '%s' невозможно, у роли '%s' нет владельцев".formatted(subjectName, objectName),
+                    exception.getDisplayMessage()
+            );
+        }
+
+        @Test
+        void when_determineRoleOwnerApprovers_withValidOwners_then_returnsApproversWithOwnerRole() {
+            String ownerLogin = "ownerLogin";
+            String initiator = "initiator";
+
+            IoManagerDto owner = new IoManagerDto();
+            owner.setLogin(ownerLogin);
+
+            ObjectDetails objectDetails = new ObjectDetails();
+            objectDetails.setApprovers(List.of());
+            objectDetails.setOwners(List.of(owner));
+
+            String subjectName = "subjectName";
+            String objectName = "objectName";
+
+            ManagerDto managerDto = new ManagerDto();
+            managerDto.setLogin(ownerLogin);
+
+            ManagerDetails managerDetails = new ManagerDetails(null, managerDto, null);
+            when(userService.extractManagerDetails(managerDto)).thenReturn(managerDetails);
+
+            List<Approver> result = approvalProcessor.determineRoleOwnerApprovers(objectDetails, initiator, subjectName, objectName);
+
+            assertThat(result, hasSize(1));
+            assertEquals(new Approver(ownerLogin, ApproverRole.OWNER, false), result.get(0));
+        }
+    }
+```
 
 ---
 
