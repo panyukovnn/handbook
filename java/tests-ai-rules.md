@@ -35,6 +35,7 @@
 - Tests must not use Thread.sleep() construction.
 - Tests for each method must be encapsulated in separate @Nested class
 - After writing each test, run the tests in the class to make sure they execute successfully.
+- If the tested class uses MapStruct mappers, then create the mappers vis `Mappers.getMapper(class);`.
 
 ## Naming
 
