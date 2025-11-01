@@ -3,7 +3,6 @@
 
 ## Rules
 
-- Every test case may contain only one assertion.
 - In every test, the assertion must be the last statement.
 - Test cases must be as short as possible.
 - Every test must assert at least once.
