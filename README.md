@@ -16,6 +16,7 @@
 - [CodeStyle](java/code-style.md)
 - [Рекомендации по именованию всего](java/naming.md)
 - [Правила по работе с liquibase](java/liquibase.md)
+- [Правила написания unit тестов для LLM](java/unit-tests-ai-rules.md)
 
 ---
 
