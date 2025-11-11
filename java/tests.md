@@ -271,17 +271,53 @@ class AdminControllerTest extends AbstractWireMockTest {
 Все тесты с использованием базы данных должны быть изолированы друг от друга, для этого:
 
 - каждый тест наполняет бд своими данными с помощью `@Sql` аннотации и отдельных скриптов
+- каждый sql скрипт предварительно очищает тестируемые таблицы с помощью инструкции `TRUNCATE TABLE`
 - скрипты должны лежать в такой же структуре папок, что и класс теста, чтобы для каждого теста (или класса тестов), набор скриптов был изолирован от других: `/test/resources/sql/controller/payment/check` (для эндпоинта `/check` в контроллере `PaymentController`)
 - каждый тест помечается аннотацией `@Transactional` если он выполняется в одном потоке, чтобы откатывать любые изменения, внесенные в бд с помощью скрипта или бизнес-логики
 
 - если в сервисе нет сложных или специфических для хранилища (например с jsonb синтаксисом) sql запросов, то разрешается использовать in-memory базу данных, например h2, что позволяет значительно ускорить выполнение тестов 
 - в остальных случаях рекомендуется использовать testcontainers
 
-### Пример использования SQL аннотации
+#### Пример использования SQL аннотации
 
-// TODO
+1. создаем sql файл по пути: `/test/resources/sql/service/linkinfo/findbyfilter` (метод `findByFilter` сервиса `LinkInfoService` в пакете `service`):
+```sql
+TRUNCATE TABLE link_info;
 
-### Пример настройки h2 базы данных
+INSERT INTO link_info(id, link, end_time, description, active, short_link, opening_count)
+VALUES ('b0e2d11b-4a8f-419f-93c5-4cd83c42639d', 'https://google.com', '2026-01-01T00:00', 'Google', true, 'abcd1234', 5),
+       ('2642b218-361c-4d29-b3e6-f768f49711f8', 'https://ya.ru',      '2027-01-01T00:00', 'Yandex', true, 'efgh5678', 10);
+```
+
+2. Реализуем тест с вызовом скрипта с помощью аннотации `@Sql`:
+```java
+class LinkInfoServiceTest extends AbstractTest {
+
+    @Test
+    @Transactional
+    @Sql("classpath:sql/service/linkinfo/findbyfilter/link_info.sql")
+    void when_findByFilter_filterByLinkPart_then_success() {
+        FilterLinkInfoRequest filterLinkInfoRequest = FilterLinkInfoRequest.builder()
+            .linkPart("google")
+            .build();
+
+        List<LinkInfoResponse> responses = linkInfoService.findByFilter(filterLinkInfoRequest);
+
+        assertThat(responses).hasSize(1);
+        LinkInfoResponse linkInfoResponse = responses.get(0);
+
+        assertEquals(UUID.fromString("b0e2d11b-4a8f-419f-93c5-4cd83c42639d"), linkInfoResponse.getId());
+        assertEquals("abcd1234", linkInfoResponse.getShortLink());
+        assertEquals("https://google.com", linkInfoResponse.getLink());
+        assertEquals(LocalDateTime.of(2026, 1, 1, 0, 0), linkInfoResponse.getEndTime());
+        assertEquals("Google", linkInfoResponse.getDescription());
+        assertEquals(true, linkInfoResponse.getActive());
+        assertEquals(5L, linkInfoResponse.getOpeningCount());
+    }
+}
+```
+
+#### Пример настройки h2 базы данных
 
 1. Подключаем зависимость
 ```groovy
@@ -300,7 +336,7 @@ spring:
     contexts: "h2"
 ```
 
-### Пример настройки Testcontainers
+#### Пример настройки Testcontainers
 
 1. Подключаем зависимости
 ```groovy
@@ -333,7 +369,7 @@ public abstract class AbstractTest {
 ```
 
 - тестконтейнер должен содержаться в статическом поле, чтобы создавался только один контейнер в рамках запуска всех тестов
-- 
+- не следует явно вызывать остановку тестконтейнера, иначе он остановится между запусками разных классов тестов 
 
 ## Параметризированные тесты:
 
