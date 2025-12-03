@@ -6,7 +6,6 @@
 - Minor inconsistencies and typos in the existing code may be fixed.
 - Every bug must be reproduced by a unit test before being fixed.
 - Every new feature must be covered by a unit test before it is implemented.
-- For unit tests use unit-tester subagent (if possible), otherwise use rules from https://github.com/panyukovnn/handbook/blob/main/java/unit-tests-ai-rules.md
 
 - Immutable objects must be favored over mutable ones.
 - Methods must never return null.
@@ -14,6 +13,13 @@
 - null may not be passed as an argument.
 - Reflection on object internals is strictly prohibited.
 - Exception messages must include as much context as possible.
+- Always keep backward compatibility of external API
+- Code must be as simple as possible for understanding.
+
+## Additional instructions
+
+- For unit tests use unit-tester subagent (if possible), otherwise use rules from https://github.com/panyukovnn/handbook/blob/main/java/unit-tests-ai-rules.md
+- For liquibase scirpts creation use rules from https://github.com/panyukovnn/handbook/blob/main/java/liquibase-ai-rules.md
 
 ---
 
@@ -53,6 +59,7 @@
 - Comments explaining intentionally non-obvious logic MUST be present; superfluous comments MUST be avoided.
 - SQL keywords MUST be UPPERCASE; SQL MUST be formatted multi-line and readably.
 - Error and log messages must always be a single sentence, with no periods inside.
+- Code MUST NOT contain magic numbers, all values, which may be dynamicly changed must be written in application.yml
 
 ## Naming
 
