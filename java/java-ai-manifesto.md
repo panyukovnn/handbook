@@ -19,7 +19,8 @@
 ## Additional instructions
 
 - For unit tests use unit-tester subagent (if possible), otherwise use rules from https://github.com/panyukovnn/handbook/blob/main/java/unit-tests-ai-rules.md
-- For liquibase scirpts creation use rules from https://github.com/panyukovnn/handbook/blob/main/java/liquibase-ai-rules.md
+- For liquibase scripts creation use rules from https://github.com/panyukovnn/handbook/blob/main/java/liquibase-ai-rules.md
+- For entity classes use rules from https://github.com/panyukovnn/handbook/blob/main/java/entity-class-ai-rules.md
 
 ---
 
