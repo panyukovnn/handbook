@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+    Файл подавления предупреждений Checkstyle
+    Используется для исключений из правил в определенных файлах
+-->
+
+<suppressions>
+
+    <!-- Разрешить использование var в тестах -->
+    <suppress checks="IllegalToken" files=".*Test\.java$"/>
+    <suppress checks="IllegalToken" files=".*/test/.*"/>
+
+    <!-- Отключить проверку длины методов для тестов (тесты могут быть длиннее) -->
+    <suppress checks="MethodLength" files=".*Test\.java$"/>
+    <suppress checks="MethodLength" files=".*/test/.*"/>
+
+    <!-- Отключить проверку Javadoc для тестов -->
+    <suppress checks="JavadocType" files=".*Test\.java$"/>
+    <suppress checks="JavadocType" files=".*/test/.*"/>
+    <suppress checks="JavadocMethod" files=".*Test\.java$"/>
+    <suppress checks="JavadocMethod" files=".*/test/.*"/>
+
+    <!-- Отключить проверку magic numbers для тестов -->
+    <suppress checks="MagicNumber" files=".*Test\.java$"/>
+    <suppress checks="MagicNumber" files=".*/test/.*"/>
+
+    <!-- Исключить сгенерированные файлы -->
+    <suppress checks=".*" files=".*[/\\]target[/\\]generated-sources[/\\].*"/>
+    <suppress checks=".*" files=".*[/\\]target[/\\]generated-test-sources[/\\].*"/>
+
+    <!-- Исключить файлы миграций БД (если есть) -->
+    <suppress checks=".*" files=".*/db/migration/.*"/>
+
+    <!-- Разрешить более длинные строки в константах с SQL -->
+    <suppress checks="LineLength" files=".*Constants\.java$" lines="1-9999"/>
+
+    <!-- Можно добавить свои исключения по мере необходимости -->
+
+</suppressions>

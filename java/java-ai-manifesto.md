@@ -15,6 +15,7 @@
 - Exception messages must include as much context as possible.
 - Always keep backward compatibility of external API
 - Code must be as simple as possible for understanding.
+- Call linters checks after finishing the user task and fix all founded issues, instruction to run linters is here: https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/linters.md 
 
 ## Additional instructions
 

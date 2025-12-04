@@ -1,0 +1,329 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    Конфигурация Checkstyle на основе code-style.md
+    Поддерживает большинство требований к стилю кода
+-->
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="warning"/>
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <!-- Длина строк: не более 250 символов -->
+    <module name="LineLength">
+        <property name="max" value="250"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <!-- Проверка именования файлов -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$"/>
+        <property name="minimum" value="0"/>
+        <property name="maximum" value="0"/>
+        <property name="message" value="Строка содержит trailing whitespace"/>
+    </module>
+
+    <!-- Проверка использования табуляции (только пробелы) -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <!-- Длина файла: не более 250 строк -->
+    <module name="FileLength">
+        <property name="max" value="250"/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <!-- =============================================== -->
+        <!-- Именование -->
+        <!-- =============================================== -->
+
+        <!-- Именование пакетов: нижний регистр, без тире -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+
+        <!-- Именование классов: PascalCase -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Именование методов: camelCase -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Именование констант: UPPER_SNAKE_CASE -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+
+        <!-- Именование статических полей: UPPER_SNAKE_CASE для констант -->
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Именование полей: camelCase -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Именование параметров: camelCase -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Именование локальных переменных: camelCase -->
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- =============================================== -->
+        <!-- Размеры -->
+        <!-- =============================================== -->
+
+        <!-- Длина методов: не более 20 строк (без комментариев) -->
+        <module name="MethodLength">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="max" value="20"/>
+            <property name="countEmpty" value="false"/>
+        </module>
+
+        <!-- Количество параметров метода: не более 7 -->
+        <module name="ParameterNumber">
+            <property name="max" value="7"/>
+            <property name="ignoreOverriddenMethods" value="true"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <!-- =============================================== -->
+        <!-- Отступы и форматирование -->
+        <!-- =============================================== -->
+
+        <!-- Отступы: 4 пробела -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="8"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
+
+        <!-- Проверка расположения левой фигурной скобки (не на новой строке) -->
+        <module name="LeftCurly">
+            <property name="option" value="eol"/>
+        </module>
+
+        <!-- Проверка расположения правой фигурной скобки -->
+        <module name="RightCurly">
+            <property name="option" value="alone"/>
+            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT"/>
+        </module>
+
+        <!-- Фигурные скобки обязательны даже для однострочных конструкций -->
+        <module name="NeedBraces">
+            <property name="allowSingleLineStatement" value="false"/>
+        </module>
+
+        <!-- Пустые строки: проверка -->
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+            <property name="tokens" value="IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF"/>
+        </module>
+
+        <!-- Пробелы вокруг операторов -->
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="false"/>
+        </module>
+
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI"/>
+        </module>
+
+        <!-- Нет пробелов внутри скобок -->
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+
+        <!-- =============================================== -->
+        <!-- Порядок элементов класса -->
+        <!-- =============================================== -->
+
+        <!-- Порядок модификаторов -->
+        <module name="ModifierOrder"/>
+
+        <!-- Избыточные модификаторы -->
+        <module name="RedundantModifier"/>
+
+        <!-- Порядок полей: статические перед нестатическими -->
+        <!-- Порядок методов: public -> protected -> package-private -> private -->
+        <module name="DeclarationOrder"/>
+
+        <!-- =============================================== -->
+        <!-- Конструкции -->
+        <!-- =============================================== -->
+
+        <!-- Проверка SimplifyBooleanExpression -->
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- Проверка equals/hashCode -->
+        <module name="EqualsHashCode"/>
+
+        <!-- Избежание NPE: константа должна быть слева в equals -->
+        <module name="EqualsAvoidNull"/>
+
+        <!-- Проверка switch: default должен быть последним -->
+        <module name="DefaultComesLast"/>
+
+        <!-- Проверка на fallthrough в switch (для старого синтаксиса) -->
+        <module name="FallThrough"/>
+
+        <!-- Проверка пустых блоков -->
+        <module name="EmptyBlock">
+            <property name="option" value="text"/>
+            <property name="tokens" value="LITERAL_WHILE, LITERAL_TRY, LITERAL_CATCH,
+                LITERAL_FINALLY, LITERAL_DO, LITERAL_IF, LITERAL_ELSE, LITERAL_FOR,
+                INSTANCE_INIT, STATIC_INIT, LITERAL_SWITCH"/>
+        </module>
+
+        <!-- =============================================== -->
+        <!-- Импорты -->
+        <!-- =============================================== -->
+
+        <!-- Избегать звездочек в импортах -->
+        <module name="AvoidStarImport"/>
+
+        <!-- Запрет избыточных импортов -->
+        <module name="RedundantImport"/>
+
+        <!-- Запрет неиспользуемых импортов -->
+        <module name="UnusedImports"/>
+
+        <!-- =============================================== -->
+        <!-- Javadoc -->
+        <!-- =============================================== -->
+
+        <!-- Javadoc для классов и интерфейсов -->
+        <module name="JavadocType">
+            <property name="scope" value="public"/>
+        </module>
+
+        <!-- =============================================== -->
+        <!-- Комментарии -->
+        <!-- =============================================== -->
+
+        <!-- Проверка TODO комментариев -->
+        <module name="TodoComment">
+            <property name="format" value="(TODO)|(FIXME)"/>
+            <property name="severity" value="info"/>
+        </module>
+
+        <!-- =============================================== -->
+        <!-- Дополнительные проверки -->
+        <!-- =============================================== -->
+
+        <!-- Избегать вложенных блоков -->
+        <module name="AvoidNestedBlocks"/>
+
+        <!-- Проверка на magic numbers (опционально) -->
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+            <property name="ignoreHashCodeMethod" value="true"/>
+            <property name="ignoreAnnotation" value="true"/>
+            <property name="ignoreFieldDeclaration" value="true"/>
+        </module>
+
+        <!-- Финальные параметры (опционально, можно закомментировать) -->
+        <!--
+        <module name="FinalParameters"/>
+        -->
+
+        <!-- Проверка на пустые statement'ы -->
+        <module name="EmptyStatement"/>
+
+        <!-- Избегать скрытия полей -->
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true"/>
+            <property name="ignoreSetter" value="true"/>
+        </module>
+
+        <!-- Проверка на inner assignment -->
+        <module name="InnerAssignment"/>
+
+        <!-- Один top-level класс на файл -->
+        <module name="OneTopLevelClass"/>
+
+        <!-- Проверка на переопределение clone без super.clone -->
+        <module name="SuperClone"/>
+
+        <!-- Проверка на переопределение finalize без super.finalize -->
+        <module name="SuperFinalize"/>
+
+        <!-- Проверка расположения аннотаций -->
+        <module name="AnnotationLocation">
+            <property name="allowSamelineMultipleAnnotations" value="false"/>
+            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+        </module>
+
+        <!-- =============================================== -->
+        <!-- Дизайн классов -->
+        <!-- =============================================== -->
+
+        <!-- Финальные классы (utility classes) -->
+        <module name="FinalClass"/>
+
+        <!-- Скрытие utility конструктора -->
+        <module name="HideUtilityClassConstructor"/>
+
+        <!-- Проверка интерфейсов (не должны быть только константами) -->
+        <module name="InterfaceIsType"/>
+
+        <!-- Видимость полей -->
+        <module name="VisibilityModifier">
+            <property name="packageAllowed" value="false"/>
+            <property name="protectedAllowed" value="true"/>
+            <property name="publicMemberPattern" value="^$"/>
+            <property name="allowPublicFinalFields" value="true"/>
+            <property name="allowPublicImmutableFields" value="true"/>
+        </module>
+
+        <!-- =============================================== -->
+        <!-- Метрики (опционально, можно настроить) -->
+        <!-- =============================================== -->
+
+        <!-- Цикломатическая сложность (опционально) -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+            <property name="severity" value="info"/>
+        </module>
+
+        <!-- Количество boolean параметров -->
+        <module name="BooleanExpressionComplexity">
+            <property name="max" value="5"/>
+        </module>
+
+    </module>
+
+    <!-- Проверка наличия package-info.java (опционально) -->
+    <!--
+    <module name="JavadocPackage"/>
+    -->
+
+    <!-- Подавление предупреждений для сгенерированных файлов -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/suppressions.xml" default="suppressions.xml"/>
+        <property name="optional" value="true"/>
+    </module>
+
+</module>
