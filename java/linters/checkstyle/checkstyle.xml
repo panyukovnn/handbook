@@ -280,9 +280,6 @@
         <!-- Дизайн классов -->
         <!-- =============================================== -->
 
-        <!-- Финальные классы (utility classes) -->
-        <module name="FinalClass"/>
-
         <!-- Скрытие utility конструктора -->
         <module name="HideUtilityClassConstructor"/>
 
