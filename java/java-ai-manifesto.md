@@ -22,6 +22,8 @@
 - For unit tests use unit-tester subagent (if possible), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/unit-tests-ai-rules.md
 - For liquibase scripts creation use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/liquibase-ai-rules.md
 - For entity classes use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/entity-class-ai-rules.md
+- For api design use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/common/api-requirements-ai-rules.md
+- For exception handling use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/exception-handling-ai-rules.md
 
 ---
 
