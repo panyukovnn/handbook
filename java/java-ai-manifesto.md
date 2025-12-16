@@ -6,6 +6,7 @@
 - Minor inconsistencies and typos in the existing code may be fixed.
 - Every bug must be reproduced by a unit test before being fixed.
 - Every new feature must be covered by a unit test before it is implemented.
+- Create `impl` package for service interfaces implementation classes. 
 
 - Immutable objects must be favored over mutable ones.
 - Methods must never return null.
@@ -24,6 +25,7 @@
 - For entity classes use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/entity-class-ai-rules.md
 - For api design use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/common/api-requirements-ai-rules.md
 - For exception handling use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/exception-handling-ai-rules.md
+- For kafka integration use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/kafka-integration-ai-rules.md
 
 ---
 
