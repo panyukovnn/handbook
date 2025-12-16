@@ -99,18 +99,25 @@ dependencies {
 }
 ```
 
-2. Над классом `AbstractTest` добавляем аннотацию `@AutoConfigureWireMock(port = 0)`
-
-3. Создаем класс `AbstractWireMockTest`, который будет инкапсулировать работу wiremock, и он будет отнаследован от `AbstractTest`:
+2. Создаем класс `AbstractWireMockTest`, который будет инкапсулировать работу wiremock, и он будет отнаследован от `AbstractTest`:
 
 ```java
 public class AbstractWireMockTest extends AbstractTest {
     
     public static final String IDENTITY_USERS_URL = "/identity/api/v1/users";
     
-    @BeforeEach 
-    public void setUp() {
-        WireMock.reset();
+    protected static WireMockServer wireMockServer;
+    
+    static {
+        wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
+        wireMockServer.start();
+        
+        System.setProperty("wiremock.server.port", String.valueOf(wireMockServer.port()));
+    }
+    
+    @AfterEach
+    public void resetWireMock() {
+        WireMock.resetAll();
     }
   
     protected void stubResponse(String url, HttpMethod method, String response) {
@@ -148,7 +155,7 @@ public class AbstractWireMockTest extends AbstractTest {
 }
 ```
 
-Прописываем в `application-test.yml` хост и порт wiremock для внешней интеграции:
+3. Прописываем в `application-test.yml` хост и порт wiremock для внешней интеграции:
 
 ```yml
 mdm-adapter:
@@ -157,7 +164,7 @@ mdm-adapter:
       host: http://localhost:${wiremock.server.port}
 ```
 
-Пример end-2-end теста с использованием wiremock:
+#### Пример end-2-end теста с использованием wiremock:
 
 ```java
 /**
@@ -371,15 +378,139 @@ public abstract class AbstractTest {
 - тестконтейнер должен содержаться в статическом поле, чтобы создавался только один контейнер в рамках запуска всех тестов
 - не следует явно вызывать остановку тестконтейнера, иначе он остановится между запусками разных классов тестов 
 
-## Параметризированные тесты:
+## Параметризированные тесты
 
-Для репетативных сценариев следует использовать парметризированные тесты
+- Для проверки различных вариаций входных параметров сценария/функции следует использовать параметризированные тесты
+
+### Пример тестирования валидации эндпоинта:
+```java
+class LinkInfoControllerTest extends AbstractTest {
+    
+    @ParameterizedTest
+    @MethodSource("postCreateLinkInfoInvalidRequestSource")
+    void when_postCreateLinkInfo_withInvalidRequest_expect_validationError(CreateLinkInfoRequest createRequest, String validationErrorMessage) throws Exception {
+        CommonRequest<CreateLinkInfoRequest> request = new CommonRequest<>();
+        request.setBody(createRequest);
+
+        mockMvc.perform(post("/api/v1/link-infos")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.id").isNotEmpty())
+            .andExpect(jsonPath("$.errorMessage").value("Ошибка валидации"))
+            .andExpect(jsonPath("$.validationErrors[?(@.message == '" + validationErrorMessage + "')]").exists());
+    }
+
+    public static Stream<Arguments> postCreateLinkInfoInvalidRequestSource() {
+      return Stream.of(
+              Arguments.of(new CreateLinkInfoRequest(null, LocalDateTime.now().plusDays(1), "test_description", true), "Ссылка не может быть пустой"),
+              Arguments.of(new CreateLinkInfoRequest("", LocalDateTime.now().plusDays(1), "test_description", true), "Ссылка не может быть пустой"),
+              Arguments.of(new CreateLinkInfoRequest("wrong_url_pattern", LocalDateTime.now().plusDays(1), "test_description", true), "url не соответствует паттерну"),
+              Arguments.of(new CreateLinkInfoRequest("https://google.com", LocalDateTime.now().minusDays(1), "test_description", true), "Дата окончания действия короткой ссылки не может быть в прошлом"),
+              Arguments.of(new CreateLinkInfoRequest("https://google.com", LocalDateTime.now().plusDays(1), "", true), "Описание не может быть пустым"),
+              Arguments.of(new CreateLinkInfoRequest("https://google.com", LocalDateTime.now().plusDays(1), null, true), "Описание не может быть пустым"),
+              Arguments.of(new CreateLinkInfoRequest("https://google.com", LocalDateTime.now().plusDays(1), "test_description", null), "Признак активности не может быть null")
+      );
+    }
+}
+```
+
+## Тесты с MQ интеграциями
+
+- наиболее полные тесты с mq интеграциями реализуются с помощью поднятия test container'а, они могут быть необходимы в комплексных сценариях:
+  - большое количество consumer/producer
+  - Request-Reply Pattern (синхронное взаимодействие через mq)
+  - kafka streams
+  - проверка работы dead letter topic
+  - нестандартная работа с партициями kafka (чтение из фиксированных партиций)
+  - проверка транзакционности
+  - тестирование валидации сообщений по схеме
+  - проверка трассировки
+- полноценной и более производительной альтернативой test container'ам, является использование embedded kafka
+- однако тестирование с поднятием полноценной kafka (в test container'е или embedded) сильно затрудняется из-за необходимости настройки ожидания завершения сценариев 
+  
 
 
+### Пример запуска test container'а с kafka
 
-Пример реализации:
+-- TODO
+```java
 
+```
 
-## Тесты с интеграциями по kafka:
+### Пример тестирования kafka без подключения к брокеру
 
-TODO
+- в случаях тестирования простых интеграций, можно вовсе отключить kafka, при этом вызывать методы listener'а напрямую, и мокировать kafkaTemplate
+
+1. Отключить автоконфигурацию
+```yaml
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+```
+
+2. Пример listener'а:
+```java
+@Service
+@ConditionalOnProperty(prefix = "mdm.kafka.mdm-event", name = "enabled", havingValue = "true")
+public class MdmEventListener {
+
+    @KafkaListener(topics = "${mdm.kafka.mdm-event.topic-in}")
+    public void consumeMdmEvent(ConsumerRecord<String, String> consumerRecord, @Header(KafkaHeaders.GROUP_ID) String groupId) {
+        // ...
+    }
+}
+```
+
+3. Вызов listener'а в тестах:
+```java
+class MdmEventListenerTest extends AbstractTest {
+
+    @Test
+    void when_consumeMdmEvent_then_success() {
+        // Arrange
+        MdmEvent mdmEvent = MdmEvent.builder().build();
+        ConsumerRecord<String, String> consumerRecord = prepareConsumerRecord(mdmEvent);
+
+        // Act
+        mdmEventListener.consumeMdmEvent(consumerRecord, "group-id");
+
+        // Assert ...
+    }
+    
+    @SneakyThrows 
+    private ConsumerRecord<String, String> prepareConsumerRecord(MdmEvent mdmEvent) {
+        String mdmEventRaw = objectMapper.writeValueAsString(mdmEvent);
+        
+        return new ConsumerRecord<>("topic", 1, 1, "key", mdmEventRaw);
+    }
+}
+```
+
+4. Мокирование kafkaTemplate:
+```java
+@SpringBootTest
+public abstract class AbstractTest {
+
+    @MockBean
+    protected KafkaTemplate<String, String> kafkaTemplate;
+}
+```
+
+```java
+class OtpControllerTest extends AbstractTest {
+
+    @Test
+    public void when_sendOtp_viaKafka_then_success() throws Exception {
+        // Arrange
+
+        KafkaRequest kafkaRequest = new KafkaRequest();
+        String jsonKafkaRequest = objectMapper.writeValueAsString(kafkaRequest);
+      
+        Mockito.when(kafkaTemplate.send("topic", jsonKafkaRequest))
+                .thenReturn(CompletableFuture.completedFuture(new SendResult<>(null, null)));
+        
+        // Act, Assert ...
+    }
+}
+```
