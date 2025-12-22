@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "model": "haiku",
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message \"Claude задал вопрос\" -sound Funk"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git add -A"
+          },
+          {
+            "type": "command",
+            "command": "/Users/nikolay/.claude/hooks/linter.sh",
+            "timeout": 300,
+            "blocking": true
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/nikolay/.claude/hooks/log-bash.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "alwaysThinkingEnabled": true
+}
