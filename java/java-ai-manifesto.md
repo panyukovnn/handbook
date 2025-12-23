@@ -6,15 +6,14 @@
 - Minor inconsistencies and typos in the existing code may be fixed.
 - Every bug must be reproduced by a unit test before being fixed.
 - Every new feature must be covered by a unit test before it is implemented.
-- Create `impl` package for service interfaces implementation classes. 
-
+- Create `impl` package for service interfaces implementation classes.
 - Immutable objects must be favored over mutable ones.
 - Methods must never return null.
 - Methods should avoid checking incoming arguments for validity, except methods in utility classes.
 - null may not be passed as an argument.
 - Reflection on object internals is strictly prohibited.
 - Exception messages must include as much context as possible.
-- Always keep backward compatibility of external API
+- Always keep backward compatibility of external API.
 - Code must be as simple as possible for understanding.
 
 ## Additional instructions
