@@ -195,17 +195,15 @@ class AdminControllerTest extends AbstractWireMockTest {
                 .andExpect(jsonPath("$.body[1].email").value("jane.doe@example.com"))
                 .andExpect(jsonPath("$.body[1].isAdmin").value(true));
         
-        Optional<User> firstUser = userRepository.findByExternalId("user-123-abc");
-        assertTrue(firstUser.isPresent());
-        assertEquals("John Doe", firstUser.get().getName());
-        assertEquals("john.doe@example.com", firstUser.get().getEmail());
-        assertTrue(firstUser.get().getIsAdmin());
+        User firstUser = userRepository.findByExternalId("user-123-abc").orElseThrow();
+        assertEquals("John Doe", firstUser.getName());
+        assertEquals("john.doe@example.com", firstUser.getEmail());
+        assertTrue(firstUser.getIsAdmin());
         
-        Optional<User> secondUser = userRepository.findByExternalId("user-456-def");
-        assertTrue(secondUser.isPresent());
-        assertEquals("Jane Doe", secondUser.get().getName());
-        assertEquals("jane.doe@example.com", secondUser.get().getEmail());
-        assertTrue(secondUser.get().getIsAdmin());
+        User secondUser = userRepository.findByExternalId("user-456-def").orElseThrow();
+        assertEquals("Jane Doe", secondUser.getName());
+        assertEquals("jane.doe@example.com", secondUser.getEmail());
+        assertTrue(secondUser.getIsAdmin());
     }
   
     @Test 
@@ -433,10 +431,218 @@ class LinkInfoControllerTest extends AbstractTest {
 
 ### Пример запуска test container'а с kafka
 
--- TODO
-```java
+- Необходимо учитывать, что при тестах с использованием тестконтейнеров не будет работать откат транзакции в тестах через `@Transactional`, поэтому каждый тест должен предварительно очищать затрагиваемые таблицы
 
+1. Подключаем зависимости:
+```groovy
+testImplementation "org.testcontainers:junit-jupiter:${testContainersVersion}"
+testImplementation "org.testcontainers:kafka:${testContainersVersion}"
+testImplementation 'org.awaitility:awaitility'
 ```
+
+2. Настраиваем базовый класс `AbstractTest`:
+```java
+@SpringBootTest
+@ActiveProfiles("test")
+public abstract class AbstractTest {
+
+    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.1"));
+
+    @BeforeAll
+    static void beforeAll() {
+        if (!kafka.isRunning()) {
+            kafka.start();
+        }
+    }
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
+        registry.add("spring.kafka.consumer.auto-offset-reset", () -> "earliest");
+    }
+  
+    @Autowired
+    protected NotificationProducer notificationProducer;
+    @Autowired
+    protected KafkaTemplate<String, String> kafkaTemplate;
+}
+```
+
+- тестконтейнер должен содержаться в статическом поле, чтобы создавался только один контейнер в рамках запуска всех тестов
+- `auto-offset-reset=earliest` необходим, чтобы consumer читал сообщения с начала топика
+
+3. Пример listener'а:
+```java
+@Service
+@RequiredArgsConstructor
+public class PaymentEventListener {
+
+    private final PaymentService paymentService;
+
+    @KafkaListener(topics = "${payment-limit.kafka.payment-events.topic}")
+    public void consumePaymentEvent(ConsumerRecord<String, String> consumerRecord) {
+        PaymentEvent event = parseEvent(consumerRecord.value());
+        paymentService.processPayment(event);
+    }
+}
+```
+
+4. Пример теста listener'а:
+```java
+class PaymentEventListenerTest extends AbstractKafkaTest {
+
+    @Value("${payment-limit.kafka.payment-events.topic}")
+    private String paymentEventsTopic;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Test
+    void when_consumePaymentEvent_then_paymentSaved() throws Exception {
+        paymentRepository.deleteAll();
+        
+        PaymentEvent paymentEvent = PaymentEvent.builder()
+                .orderId("order-123")
+                .amount(new BigDecimal("100.00"))
+                .currency("RUB")
+                .build();
+
+        String eventJson = objectMapper.writeValueAsString(paymentEvent);
+
+        kafkaTemplate.send(paymentEventsTopic, "order-123", eventJson);
+
+        await()
+                .pollInterval(Duration.ofSeconds(1))
+                .atMost(10, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    Payment payment = paymentRepository.findByOrderId("order-123").orElseThrow();
+
+                    assertThat(payment.getAmount()).isEqualByComparingTo(new BigDecimal("100.00"));
+                    assertThat(payment.getCurrency()).isEqualTo("RUB");
+                    assertThat(payment.getStatus()).isEqualTo(PaymentStatus.PROCESSED);
+                });
+    }
+
+    @Test
+    void when_consumePaymentEvent_withInvalidAmount_then_paymentRejected() throws Exception {
+        paymentRepository.deleteAll();
+        
+        PaymentEvent paymentEvent = PaymentEvent.builder()
+                .orderId("order-456")
+                .amount(new BigDecimal("-50.00"))
+                .currency("RUB")
+                .build();
+
+        String eventJson = objectMapper.writeValueAsString(paymentEvent);
+
+        kafkaTemplate.send(paymentEventsTopic, "order-456", eventJson);
+
+        await()
+                .pollInterval(Duration.ofSeconds(1))
+                .atMost(10, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    Payment payment = paymentRepository.findByOrderId("order-456").orElseThrow();
+
+                    assertThat(payment.getStatus()).isEqualTo(PaymentStatus.REJECTED);
+                });
+    }
+}
+```
+
+5. Пример теста producer'а:
+```java
+class NotificationProducerTest extends AbstractTest {
+
+    private Consumer<String, String> consumer;
+
+    @BeforeEach
+    void setUp() {
+        Map<String, Object> consumerProps = new HashMap<>();
+        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group-" + UUID.randomUUID());
+        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+
+        consumer = new KafkaConsumer<>(consumerProps);
+        consumer.subscribe(List.of("notificationsTopic"));
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (consumer != null) {
+            consumer.close();
+        }
+    }
+
+    @Test
+    void when_sendNotification_then_messagePublished() throws Exception {
+        NotificationEvent event = NotificationEvent.builder()
+                .userId("user-123")
+                .message("Ваш платёж успешно обработан")
+                .type(NotificationType.PAYMENT_SUCCESS)
+                .build();
+
+        notificationProducer.sendNotification(event);
+
+        await()
+                .pollInterval(Duration.ofSeconds(1))
+                .atMost(10, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+
+                    assertThat(records.count()).isGreaterThan(0);
+
+                    ConsumerRecord<String, String> record = records.iterator().next();
+                    assertThat(record.key()).isEqualTo("user-123");
+
+                    NotificationEvent receivedEvent = objectMapper.readValue(record.value(), NotificationEvent.class);
+                    assertThat(receivedEvent.getUserId()).isEqualTo("user-123");
+                    assertThat(receivedEvent.getMessage()).isEqualTo("Ваш платёж успешно обработан");
+                    assertThat(receivedEvent.getType()).isEqualTo(NotificationType.PAYMENT_SUCCESS);
+                });
+    }
+
+    @Test
+    void when_sendMultipleNotifications_then_allMessagesPublished() throws Exception {
+        List<NotificationEvent> events = List.of(
+                NotificationEvent.builder()
+                        .userId("user-1")
+                        .message("Сообщение 1")
+                        .type(NotificationType.INFO)
+                        .build(),
+                NotificationEvent.builder()
+                        .userId("user-2")
+                        .message("Сообщение 2")
+                        .type(NotificationType.WARNING)
+                        .build()
+        );
+
+        events.forEach(notificationProducer::sendNotification);
+
+        await()
+                .pollInterval(Duration.ofSeconds(1))
+                .atMost(10, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    List<ConsumerRecord<String, String>> allRecords = new ArrayList<>();
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                    records.forEach(allRecords::add);
+
+                    assertThat(allRecords).hasSize(2);
+
+                    Set<String> userIds = allRecords.stream()
+                            .map(ConsumerRecord::key)
+                            .collect(Collectors.toSet());
+                    assertThat(userIds).containsExactlyInAnyOrder("user-1", "user-2");
+                });
+    }
+}
+```
+
+**Важно!** При тестировании с testcontainers:
+- используйте `Awaitility` для асинхронных проверок, т.к. сообщения обрабатываются асинхронно
+- для каждого теста producer'а создавайте новый consumer с уникальным `group.id`, чтобы изолировать тесты друг от друга
+- устанавливайте разумные таймауты ожидания (обычно 5-10 секунд)
 
 ### Пример тестирования kafka без подключения к брокеру
 
@@ -468,11 +674,9 @@ class MdmEventListenerTest extends AbstractTest {
 
     @Test
     void when_consumeMdmEvent_then_success() {
-        // Arrange
         MdmEvent mdmEvent = MdmEvent.builder().build();
         ConsumerRecord<String, String> consumerRecord = prepareConsumerRecord(mdmEvent);
 
-        // Act
         mdmEventListener.consumeMdmEvent(consumerRecord, "group-id");
 
         // Assert ...
