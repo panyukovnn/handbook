@@ -23,6 +23,7 @@ ver 1.0
 - For end-to-end tests use the integration-tester subagent (if available), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/tests/end-to-end-tests-ai-rules.md 
 - For liquibase scripts follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/liquibase-ai-rules.md
 - For entity classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/entity-class-ai-rules.md
+- For work with database follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/db.md
 - For dto classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/dto-class-ai-rules.md
 - For api design follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/common/api-requirements-ai-rules.md
 - For exception handling follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/exception-handling-ai-rules.md
