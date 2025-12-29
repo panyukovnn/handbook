@@ -14,9 +14,16 @@ plugins {
 
 checkstyle {
     toolVersion = '12.2.0'
-    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
     maxWarnings = 0
     ignoreFailures = false
+}
+
+tasks.named('checkstyleMain') {
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+tasks.named('checkstyleTest') {
+    configFile = file("${rootDir}/config/checkstyle/checkstyle-test.xml")
 }
 
 tasks.withType(Checkstyle) {
