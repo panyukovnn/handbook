@@ -54,11 +54,6 @@ pmdTest {
     ruleSetFiles = files("${rootDir}/config/pmd/ruleset-test.xml")
 }
 
-tasks.register('codeQuality') {
-    dependsOn 'pmdMain', 'pmdTest', 'checkstyleMain', 'checkstyleTest'
-    group = 'verification'
-}
-
 // SpotBugs
 
 spotbugs {
@@ -67,6 +62,10 @@ spotbugs {
     includeFilter = file('config/spotbugs/include.xml')
 }
 
+tasks.register('codeQuality') {
+    dependsOn 'pmdMain', 'pmdTest', 'checkstyleMain', 'checkstyleTest', 'spotbugsMain', 'spotbugsTest'
+    group = 'verification'
+}
 ```
 
 Add include linters.gradle to build.gradle file and spotbuts plugin:
