@@ -241,7 +241,15 @@
             <property name="max" value="5"/>
         </module>
 
+        <module name="SuppressWarningsHolder"/>
+
+        <module name="SuppressWarnings">
+            <property name="id" value="checkstyle:suppresswarnings"/>
+        </module>
+
     </module>
+
+    <module name="SuppressWarningsFilter"/>
 
     <!-- Подавление предупреждений для сгенерированных файлов -->
     <module name="SuppressionFilter">
