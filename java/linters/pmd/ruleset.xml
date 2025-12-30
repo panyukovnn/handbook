@@ -80,6 +80,7 @@
         <exclude name="NullAssignment"/>
         <exclude name="AvoidCatchingGenericException"/>
         <exclude name="MissingSerialVersionUID"/>
+        <exclude name="InvalidLogMessageFormat"/>
     </rule>
 
     <!-- Multithreading -->

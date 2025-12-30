@@ -89,6 +89,7 @@
         <exclude name="AvoidCatchingGenericException"/>
         <exclude name="MissingSerialVersionUID"/>
         <exclude name="AvoidDuplicateLiterals"/>
+        <exclude name="InvalidLogMessageFormat"/>
     </rule>
 
     <!-- Multithreading -->
