@@ -1,5 +1,6 @@
-Manifesto version: 1.2
 # Java AI Rules for code generation
+
+Manifesto version: 1.2
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - The existing code structure must not be changed without a strong reason.
