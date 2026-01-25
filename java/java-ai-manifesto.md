@@ -1,4 +1,4 @@
-ver 1.1
+ver 1.2
 
 # Java AI Rules for code generation
 
