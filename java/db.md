@@ -79,9 +79,9 @@
 
 ### Служебные поля
 
-- **create_time** — Unix-время (не меняется), формат целое число
+- **create_time** — timestamp в UTC, в liquibase задается следующим образом дефолтное значение "defaultValueComputed: CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"
 - **create_user** — VARCHAR, идентификатор добавившего запись
-- **last_modify_time** — обновляется при каждом изменении
+- **last_modify_time** — timestamp в UTC, в liquibase задается следующим образом дефолтное значение "defaultValueComputed: CURRENT_TIMESTAMP AT TIME ZONE 'UTC'", обновляется при каждом изменении
 - **last_modify_user** — идентификатор последнего редактора
 - **note** (опционально) — техническое описание в справочниках
 

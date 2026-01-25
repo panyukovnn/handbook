@@ -43,7 +43,8 @@ ver 1.1
 - A blank line MUST appear before every return statement.
 - A blank line MUST appear after closing braces (unless it is the end of a method).
 - A blank line MUST appear before each control construct (if/for/try/etc.).
-- A blank line MUST appear after constants, after fields, between methods, after the class declaration, and after the import block.
+- A blank line MUST appear between methods, after the class declaration, and after the import block.
+- A blank line MUST NOT appear between class fields declaration and class constants declaration. 
 - Extra blank lines between consecutive fields MUST NOT be added.
 - Complex boolean expressions and long call chains MUST be extracted into clearly named variables or methods.
 - Curly braces MUST be used for all single-line statements.

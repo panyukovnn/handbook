@@ -120,7 +120,7 @@ databaseChangeLog:
               - column:
                   name: create_time
                   type: timestamp
-                  defaultValueComputed: now()
+                  defaultValueComputed: CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
                   remarks: "Время создания"
               - column:
                   name: create_user
@@ -129,7 +129,7 @@ databaseChangeLog:
               - column:
                   name: last_update_time
                   type: timestamp
-                  defaultValueComputed: now()
+                  defaultValueComputed: CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
                   remarks: "Время обновления"
               - column:
                   name: last_update_user
