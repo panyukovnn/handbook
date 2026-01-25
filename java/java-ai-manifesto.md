@@ -1,4 +1,4 @@
-# Java AI Rules for code generation
+# Manifesto: Java AI Rules for code generation
 
 Manifesto version: 1.2
 
