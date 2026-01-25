@@ -3,7 +3,7 @@
 # URL для загрузки правил
 URL="https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/java-ai-manifesto.md"
 TARGET_FILE="CLAUDE.md"
-MARKER="# Java AI Rules for code generation"
+MARKER="# Manifesto: Java AI Rules for code generation"
 
 # Загружаем новое содержимое
 echo "Загрузка актуальных правил..."
