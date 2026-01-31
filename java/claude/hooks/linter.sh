@@ -25,6 +25,12 @@ if [[ ! -f "./gradlew" ]]; then
   exit 0
 fi
 
+# Проверяем наличие задачи codeQuality
+if ! ./gradlew tasks --all 2>/dev/null | grep -q "codeQuality"; then
+  # Задача codeQuality не найдена - пропускаем проверку
+  exit 0
+fi
+
 # Запускаем и сохраняем весь вывод
 GRADLE_OUTPUT=$(./gradlew codeQuality 2>&1) || GRADLE_EXIT_CODE=$?
 
