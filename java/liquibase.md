@@ -121,19 +121,27 @@ databaseChangeLog:
                   name: create_time
                   type: timestamp
                   defaultValueComputed: CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+                  constraints:
+                    nullable: false
                   remarks: "Время создания"
               - column:
                   name: create_user
                   type: varchar
+                  constraints:
+                    nullable: false
                   remarks: "Пользователь, создавший запись"
               - column:
                   name: last_update_time
                   type: timestamp
                   defaultValueComputed: CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+                  constraints:
+                    nullable: false
                   remarks: "Время обновления"
               - column:
                   name: last_update_user
                   type: varchar
+                  constraints:
+                    nullable: false
                   remarks: "Пользователь, изменивший запись"
 ```
 
