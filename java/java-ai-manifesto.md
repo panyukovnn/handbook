@@ -19,15 +19,16 @@ version: 1.2
 
 ## Additional instructions
 
-- For unit tests use the unit-tester subagent (if available), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/tests/unit-tests-ai-rules.md
-- For end-to-end tests use the integration-tester subagent (if available), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/tests/end-to-end-tests-ai-rules.md 
-- For liquibase scripts follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/liquibase-ai-rules.md
-- For entity classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/entity-class-ai-rules.md
-- For work with database follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/db.md
-- For dto classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/dto-class-ai-rules.md
+If possible, use the appropriate claude SKILL, otherwise, follow the instructions:
+- For unit tests use the unit-tester subagent (if available), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/tests/unit-tests-ai-rules.md
+- For end-to-end tests use the integration-tester subagent (if available), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/tests/end-to-end-tests-ai-rules.md 
+- For liquibase scripts follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/db/liquibase-ai-rules.md
+- For entity classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/entity-class-ai-rules.md
+- For work with database follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/db/db-ai-rules.md
+- For dto classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/dto-class-ai-rules.md
 - For api design follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/common/api-requirements-ai-rules.md
-- For exception handling follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/exception-handling-ai-rules.md
-- For kafka integration follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/kafka-integration-ai-rules.md
+- For exception handling follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/exception-handling-ai-rules.md
+- For kafka integration follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/kafka-integration-ai-rules.md
 
 ## Code Style
 
