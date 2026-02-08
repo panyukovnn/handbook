@@ -1,21 +1,15 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.3
+version: 1.4
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
+- Code must be as simple as possible for understanding.
 - The existing code structure must not be changed without a strong reason.
 - Minor inconsistencies and typos in the existing code may be fixed.
 - Every bug must be reproduced by a unit test before being fixed.
 - Every new feature must be covered by a unit test before it is implemented.
-- Create `impl` package for service interfaces implementation classes.
-- Immutable objects must be favored over mutable ones.
-- Methods must never return null.
-- Methods should avoid checking incoming arguments for validity, except methods in utility classes.
-- null may not be passed as an argument.
-- Reflection on object internals is strictly prohibited.
-- Exception messages must include as much context as possible.
-- Always keep backward compatibility of external API.
-- Code must be as simple as possible for understanding.
+- Always keep backward compatibility of external API and database structure.
+- If any rule from this manifesto or instructions was not followed, or if LLM identifies missing information in instructions or user prompts needed for clearer task understanding, LLM must propose additions to CLAUDE.md and instructions in CLAUDE-addition.md file.
 
 ## Additional instructions
 
@@ -26,7 +20,7 @@ If possible, use the appropriate claude SKILL, otherwise, follow the instruction
 - For entity classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/entity-class-ai-rules.md
 - For work with database follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/db/db-ai-rules.md
 - For dto classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/dto-class-ai-rules.md
-- For api design follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/common/api-requirements-ai-rules.md
+- For api design follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/common/ai/api-requirements-ai-rules.md
 - For exception handling follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/exception-handling-ai-rules.md
 - For kafka integration follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/kafka-integration-ai-rules.md
 
@@ -68,6 +62,12 @@ If possible, use the appropriate claude SKILL, otherwise, follow the instruction
 - SQL keywords MUST be UPPERCASE; SQL MUST be formatted multi-line and readably.
 - Error and log messages must always be a single sentence, with no periods inside.
 - Code MUST NOT contain magic numbers, all values, which may be dynamicly changed must be written in application.yml
+- Create `impl` package for service interfaces implementation classes.
+- Methods MUST never return `null`.
+- Methods SHOULD avoid checking incoming arguments for validity, except methods in utility classes.
+- If `null` is passed as an argument, this argument MUST be annotated with `@Nullable`.
+- Reflection on object internals is prohibited.
+- Exception messages must include as much context as possible.
 
 ## Naming
 
