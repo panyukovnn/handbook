@@ -84,7 +84,9 @@
     </rule>
 
     <!-- Multithreading -->
-    <rule ref="category/java/multithreading.xml"/>
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="DoNotUseThreads"/>
+    </rule>
 
     <!-- Performance -->
     <rule ref="category/java/performance.xml"/>
