@@ -13,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "terminal-notifier -message \"Claude задал вопрос\" -sound Funk"
+            "command": "terminal-notifier -message \"Claude задал вопрос во вкладке: ${TAB_NAME:-${PWD##*/}}\" -sound Funk || exit 0"
           }
         ]
       }

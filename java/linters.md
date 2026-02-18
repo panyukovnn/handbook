@@ -66,6 +66,15 @@ tasks.register('codeQuality') {
     dependsOn 'pmdMain', 'pmdTest', 'checkstyleMain', 'checkstyleTest', 'spotbugsMain', 'spotbugsTest'
     group = 'verification'
 }
+
+// Отключаем автоматический запуск линтеров при сборке приложения, линтеры запускаются через таск codeQuality
+gradle.taskGraph.whenReady { taskGraph ->
+    if (!taskGraph.hasTask(':codeQuality')) {
+        ['checkstyleMain', 'checkstyleTest', 'pmdMain', 'pmdTest', 'spotbugsMain', 'spotbugsTest'].each { name ->
+            tasks.findByName(name)?.enabled = false
+        }
+    }
+}
 ```
 
 Add include linters.gradle to build.gradle file and spotbuts plugin:
