@@ -9,14 +9,23 @@
 ### Общие
 
 - [Требования к API](common/api-requirements.md)
-- [Правила ведения Pull Request'ов и code review](common/%D0%9F%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0-%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F-Pull-Request-%D0%B8-code-review.md)
+- [Правила ведения Pull Request'ов и code review](common/pull-requests-and-code-review.md)
 
 ### Java
 
 - [CodeStyle](java/code-style.md)
 - [Рекомендации по именованию всего](java/naming.md)
-- [Правила по работе с liquibase](java/liquibase.md)
-- [Правила написания unit тестов для LLM](java/unit-tests-ai-rules.md)
+- [Классы для работы с API](java/api-requirements-classes.md)
+- [Entity-классы](java/entity-classes.md)
+- [Работа с базой данных](java/db.md)
+- [Правила по работе с Liquibase](java/liquibase.md)
+- [Тестирование](java/tests.md)
+- [Линтеры](java/linters.md)
+
+### AI-ассистент
+
+- [Java AI Manifesto](java/java-ai-manifesto.md)
+- [Рекомендации для Claude](java/claude/claude-recommendations.md)
 
 ---
 
