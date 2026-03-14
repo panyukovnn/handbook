@@ -130,24 +130,3 @@ spring:
     hibernate:
       ddl-auto: validate
 ```
-
-вот правильно:
-```yaml
-spring:
-  application:
-    name: reference-feedback
-  datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-    hikari:
-      schema: reference_feedback
-      connection-init-sql: CREATE SCHEMA IF NOT EXISTS ${spring.datasource.hikari.schema};
-  liquibase:
-    change-log: ./db/changelog/changelog-master.yml
-    contexts: "postgres"
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: validate
-```
