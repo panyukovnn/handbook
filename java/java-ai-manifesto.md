@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.4
+version: 1.5
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -10,19 +10,7 @@ version: 1.4
 - Every new feature must be covered by a unit test before it is implemented.
 - Always keep backward compatibility of external API and database structure.
 - If any rule from this manifesto or instructions was not followed, or if LLM identifies missing information in instructions or user prompts needed for clearer task understanding, LLM must propose additions to CLAUDE.md and instructions in CLAUDE-addition.md file.
-
-## Additional instructions
-
-If possible, use the appropriate claude SKILL, otherwise, follow the instructions:
-- For unit tests use the unit-tester subagent (if available), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/tests/unit-tests-ai-rules.md
-- For end-to-end tests use the integration-tester subagent (if available), otherwise use rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/tests/end-to-end-tests-ai-rules.md 
-- For liquibase scripts follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/db/liquibase-ai-rules.md
-- For entity classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/entity-class-ai-rules.md
-- For work with database follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/db/db-ai-rules.md
-- For dto classes follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/dto-class-ai-rules.md
-- For api design follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/common/ai/api-requirements-ai-rules.md
-- For exception handling follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/exception-handling-ai-rules.md
-- For kafka integration follow the rules from https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/ai/kafka-integration-ai-rules.md
+- If possible, use the appropriate claude SKILL.
 
 ## Code Style
 
@@ -101,4 +89,3 @@ If possible, use the appropriate claude SKILL, otherwise, follow the instruction
 - Many-to-many join tables MUST be named table1_table2 with logical or alphabetical order; the second table name MAY be plural when appropriate.
 - Column names MUST be nouns reflecting stored data; foreign keys MUST follow `<table>_id` naming.
 - Indexes and constraints MUST follow the prefix_table_column1_column2 pattern; allowed prefixes: pkey_, key_, excl_, idx_, fkey_, check_.
-
