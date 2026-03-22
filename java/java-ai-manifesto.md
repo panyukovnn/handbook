@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.5
+version: 1.6
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -89,3 +89,13 @@ version: 1.5
 - Many-to-many join tables MUST be named table1_table2 with logical or alphabetical order; the second table name MAY be plural when appropriate.
 - Column names MUST be nouns reflecting stored data; foreign keys MUST follow `<table>_id` naming.
 - Indexes and constraints MUST follow the prefix_table_column1_column2 pattern; allowed prefixes: pkey_, key_, excl_, idx_, fkey_, check_.
+
+# Self-improvement protocol
+
+- Claude has read-write access to this file (CLAUDE.md). Claude should treat it as a living document — not just instructions to follow, but a knowledge base to actively maintain and grow.
+- Update CLAUDE.md whenever any of the following occur:
+  - User corrects you — If the user says "no, I prefer X over Y" or "don't do it that way," add it under `## Preferences & Style.` 
+  - You make a mistake — After any error (wrong assumption, broken code, misunderstood intent), log it under `## Mistakes & Lessons` so you never repeat it. 
+  - You discover project knowledge — Architecture decisions, naming conventions, deployment quirks, key file paths — add them under `## Project Knowledge` 
+  - You identify a missing capability — If a task would benefit from a reusable pattern, script, alias, or workflow you don't currently have, propose it under `## Skill Suggestions`
+- This entire self-improvement protocol can itself be improved. If Claude notices the process is noisy, redundant, or missing something, it should suggest a change to this section.
