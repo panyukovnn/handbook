@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.6
+version: 1.7
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -43,7 +43,7 @@ version: 1.6
 - Functional call chains MUST be split across lines (one step per line where practical).
 - In equals comparisons, the left operand MUST be a known non-null value (e.g., a constant or enum literal).
 - Javadoc and comments MUST be written in Russian.
-- Classes and interfaces MUST be documented; methods/fields with non-obvious logic MUST be documented; @Override methods MUST NOT be documented.
+- Classes and interfaces MUST NOT be documented; methods/fields with non-obvious logic MUST be documented; @Override methods MUST NOT be documented.
 - Private methods MUST be documented when needed to clarify the contract.
 - Empty method implementations MUST contain an explicit comment stating no implementation is required.
 - Comments explaining intentionally non-obvious logic MUST be present; superfluous comments MUST be avoided.
