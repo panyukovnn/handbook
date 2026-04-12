@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.7
+version: 1.8
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -56,6 +56,7 @@ version: 1.7
 - If `null` is passed as an argument, this argument MUST be annotated with `@Nullable`.
 - Reflection on object internals is prohibited.
 - Exception messages must include as much context as possible.
+- Direct DB modifications (DROP/DELETE schema, table, column), editing Liquibase checksums, and any destructive DB operations MUST NOT be performed without explicit and unambiguous user instruction specifying the exact object; if the target schema/table is not specified, LLM MUST ask for clarification before proceeding.
 
 ## Naming
 
