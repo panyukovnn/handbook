@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.8
+version: 1.9
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -51,7 +51,7 @@ version: 1.8
 - Error and log messages must always be a single sentence, with no periods inside.
 - Code MUST NOT contain magic numbers, all values, which may be dynamicly changed must be written in application.yml
 - Create `impl` package for service interfaces implementation classes.
-- Methods MUST never return `null`.
+- Methods MUST never return `null`; if returning `null` is unavoidable, the method MUST be annotated with `@Nullable` from `jakarta.annotation`.
 - Methods SHOULD avoid checking incoming arguments for validity, except methods in utility classes.
 - If `null` is passed as an argument, this argument MUST be annotated with `@Nullable`.
 - Reflection on object internals is prohibited.
