@@ -59,16 +59,15 @@ else
     echo "QWEN.md пропущен (ENABLE_QWEN=false)."
 fi
 
-# Самообновление скрипта из приватного GitHub репозитория
-SELF_REPO="panyukovnn/personal-environment"
-SELF_PATH="claude/update-manifesto.sh"
+# Самообновление скрипта из текущего GitHub репозитория
+SELF_URL="https://raw.githubusercontent.com/panyukovnn/handbook/refs/heads/main/java/update-manifesto.sh"
 SELF_FILE="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 
-echo "Самообновление скрипта из $SELF_REPO..."
-NEW_SCRIPT=$(gh api "repos/${SELF_REPO}/contents/${SELF_PATH}" --jq '.content' | base64 --decode)
+echo "Самообновление скрипта из $SELF_URL..."
+NEW_SCRIPT=$(curl -s "$SELF_URL")
 
 if [ -z "$NEW_SCRIPT" ]; then
-    echo "Предупреждение: не удалось загрузить обновление скрипта из $SELF_REPO"
+    echo "Предупреждение: не удалось загрузить обновление скрипта из $SELF_URL"
 else
     echo "$NEW_SCRIPT" > "$SELF_FILE"
     chmod +x "$SELF_FILE"
