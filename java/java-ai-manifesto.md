@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.10
+version: 1.11
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -50,6 +50,7 @@ version: 1.10
 - Private methods MUST be documented when needed to clarify the contract.
 - Empty method implementations MUST contain an explicit comment stating no implementation is required.
 - Comments explaining intentionally non-obvious logic MUST be present; superfluous comments MUST be avoided.
+- Multi-line string literals SHOULD use Java 17 text blocks (`"""`) instead of concatenating single-line strings with `+` and line breaks, where the project's Java version allows it.
 - SQL keywords MUST be UPPERCASE; SQL MUST be formatted multi-line and readably.
 - Error and log messages must always be a single sentence, with no periods inside.
 - Code MUST NOT contain magic numbers, all values, which may be dynamicly changed must be written in application.yml
