@@ -50,6 +50,7 @@
         <exclude name="ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
         <exclude name="ExcessiveImports"/>
         <exclude name="AbstractClassWithoutAnyMethod"/>
+        <exclude name="TooManyFields"/>
 
         <!-- исключаем, потому что ниже настраиваем эти правила отдельно -->
         <exclude name="CyclomaticComplexity"/>

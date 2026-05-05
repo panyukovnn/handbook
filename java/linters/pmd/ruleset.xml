@@ -42,6 +42,7 @@
         <exclude name="LoosePackageCoupling"/>
         <exclude name="DataClass"/>
         <exclude name="ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
+        <exclude name="TooManyFields"/>
 
         <!-- исключаем, потому что ниже настраиваем эти правила отдельно -->
         <exclude name="CyclomaticComplexity"/>
