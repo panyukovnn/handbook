@@ -202,3 +202,4 @@ WHERE code = 'RUR';
 - **НИКОГДА** не удалять файлы changeSet'ов
 - Для исправлений создавать новый changeSet
 - Не использовать foreign key и ограничения на длину строки/ размер числа
+- Запрещено использовать constraints (NOT NULL, UNIQUE, CHECK и т.п.) без явного указания пользователя, исключение составляют primary key и аудируемые поля (create_time, create_user, last_update_time, last_update_user)
