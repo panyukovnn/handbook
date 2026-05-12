@@ -14,6 +14,7 @@ version: 1.11
 - A step-by-step implementation plan and the implementation specification for every task MUST live inside the project (default location: `docs/tasks/<TASK-ID>.md`) BEFORE any code is written; implementing a task from a verbal description without a committed plan is forbidden.
 - Task execution (locally or in the container) MUST be launched via the `implement-plan` skill against the plan stored in the project; improvising in bypass of this skill is forbidden.
 - If an executable `claude-task` script exists in the project root, all task work MUST be performed through it (`./claude-task <path-to-plan>`) instead of running Claude directly on the host — this guarantees an isolated environment and a unified set of working rules.
+- If the JetBrains MCP server is available, after editing or creating any `.java` file the agent MUST invoke the JetBrains "reformat file" action for that file.
 
 ## Code Style
 
