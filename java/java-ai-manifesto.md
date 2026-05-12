@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.11
+version: 1.12
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -9,8 +9,8 @@ version: 1.11
 - Every bug must be reproduced by a unit test before being fixed.
 - Every new feature must be covered by a unit test before it is implemented.
 - Always keep backward compatibility of external API and database structure.
-- If any rule from this manifesto or instructions was not followed, or if LLM identifies missing information in instructions or user prompts needed for clearer task understanding, LLM must propose additions to CLAUDE.md and instructions in CLAUDE-addition.md file.
-- If possible, use the appropriate claude SKILL.
+- If any rule from this manifesto or instructions was not followed, or if LLM identifies missing information in instructions or user prompts needed for clearer task understanding, LLM must propose additions to AGENTS.md and instructions in AGENTS-addition.md file.
+- If possible, use the appropriate skill of the agent.
 - A step-by-step implementation plan and the implementation specification for every task MUST live inside the project (default location: `docs/tasks/<TASK-ID>.md`) BEFORE any code is written; implementing a task from a verbal description without a committed plan is forbidden.
 - Task execution (locally or in the container) MUST be launched via the `implement-plan` skill against the plan stored in the project; improvising in bypass of this skill is forbidden.
 - If an executable `claude-task` script exists in the project root, all task work MUST be performed through it (`./claude-task <path-to-plan>`) instead of running Claude directly on the host — this guarantees an isolated environment and a unified set of working rules.
@@ -97,10 +97,10 @@ version: 1.11
 
 # Self-improvement protocol
 
-- Claude has read-write access to this file (CLAUDE.md). Claude should treat it as a living document — not just instructions to follow, but a knowledge base to actively maintain and grow.
-- Update CLAUDE.md whenever any of the following occur:
+- The agent has read-write access to this file (AGENTS.md). The agent should treat it as a living document — not just instructions to follow, but a knowledge base to actively maintain and grow.
+- Update AGENTS.md whenever any of the following occur:
   - User corrects you — If the user says "no, I prefer X over Y" or "don't do it that way," add it under `## Preferences & Style.` 
   - You make a mistake — After any error (wrong assumption, broken code, misunderstood intent), log it under `## Mistakes & Lessons` so you never repeat it. 
   - You discover project knowledge — Architecture decisions, naming conventions, deployment quirks, key file paths — add them under `## Project Knowledge` 
   - You identify a missing capability — If a task would benefit from a reusable pattern, script, alias, or workflow you don't currently have, propose it under `## Skill Suggestions`
-- This entire self-improvement protocol can itself be improved. If Claude notices the process is noisy, redundant, or missing something, it should suggest a change to this section.
+- This entire self-improvement protocol can itself be improved. If the agent notices the process is noisy, redundant, or missing something, it should suggest a change to this section.
