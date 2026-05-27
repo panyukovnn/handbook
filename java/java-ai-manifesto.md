@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.12
+version: 1.13
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -99,6 +99,7 @@ version: 1.12
 # Self-improvement protocol
 
 - The agent has read-write access to this file (AGENTS.md). The agent should treat it as a living document — not just instructions to follow, but a knowledge base to actively maintain and grow.
+- When adding new rules or editing existing AGENTS.md guidance, place the changes above the `# Manifesto: Java AI Rules for code generation` heading. That heading will be present in AGENTS.md and must remain below all such additions.
 - Update AGENTS.md whenever any of the following occur:
   - User corrects you — If the user says "no, I prefer X over Y" or "don't do it that way," add it under `## Preferences & Style.` 
   - You make a mistake — After any error (wrong assumption, broken code, misunderstood intent), log it under `## Mistakes & Lessons` so you never repeat it. 
