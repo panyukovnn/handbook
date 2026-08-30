@@ -1,6 +1,6 @@
 # Manifesto: Java AI Rules for code generation
 
-version: 1.13
+version: 1.14
 
 - Prepare checkbox plan for every new feature, before realization, and ask user about its correctness.
 - Code must be as simple as possible for understanding.
@@ -96,13 +96,16 @@ version: 1.13
 - Column names MUST be nouns reflecting stored data; foreign keys MUST follow `<table>_id` naming.
 - Indexes and constraints MUST follow the prefix_table_column1_column2 pattern; allowed prefixes: pkey_, key_, excl_, idx_, fkey_, check_.
 
-# Self-improvement protocol
+# Project knowledge protocol
 
-- The agent has read-write access to this file (AGENTS.md). The agent should treat it as a living document — not just instructions to follow, but a knowledge base to actively maintain and grow.
-- When adding new rules or editing existing AGENTS.md guidance, place the changes above the `# Manifesto: Java AI Rules for code generation` heading. That heading will be present in AGENTS.md and must remain below all such additions.
-- Update AGENTS.md whenever any of the following occur:
-  - User corrects you — If the user says "no, I prefer X over Y" or "don't do it that way," add it under `## Preferences & Style.` 
-  - You make a mistake — After any error (wrong assumption, broken code, misunderstood intent), log it under `## Mistakes & Lessons` so you never repeat it. 
-  - You discover project knowledge — Architecture decisions, naming conventions, deployment quirks, key file paths — add them under `## Project Knowledge` 
-  - You identify a missing capability — If a task would benefit from a reusable pattern, script, alias, or workflow you don't currently have, propose it under `## Skill Suggestions`
-- This entire self-improvement protocol can itself be improved. If the agent notices the process is noisy, redundant, or missing something, it should suggest a change to this section.
+- Treat AGENTS.md as the canonical, agent-agnostic source of persistent project instructions. Agent-specific files such as CLAUDE.md and QWEN.md should reference AGENTS.md instead of duplicating its contents.
+- Add only durable knowledge that is likely to affect future work. Session history, one-off task details, and information already available in project files or configuration do not belong in AGENTS.md.
+- Place project-specific additions above the `# Manifesto: Java AI Rules for code generation` heading. The heading must remain below all such additions so the manifesto can be updated independently.
+- Update AGENTS.md whenever any of the following occurs:
+  - The user states a stable project preference — add it under `## Preferences & Style`.
+  - A mistake reveals a reusable project-specific lesson — add the preventive rule under `## Mistakes & Lessons`.
+  - Durable project knowledge is discovered — add architecture decisions, naming conventions, deployment constraints, or non-obvious key paths under `## Project Knowledge`.
+  - A reusable capability is missing — propose the pattern, script, alias, or workflow under `## Skill Suggestions`.
+- Before adding or editing guidance, search AGENTS.md for an existing rule and update that single source of truth instead of duplicating it.
+- Keep every addition concise, actionable, and independent of a specific AI agent or vendor.
+- If this protocol becomes noisy, redundant, or incomplete, propose a focused improvement to it.
